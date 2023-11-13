@@ -1,10 +1,24 @@
 const express = require("express");
 const app = express();
 const PORT = 3000;
+const {authenticateUser}= require('./Config/auth');
 //esta funcion wappinit por defecto inicializa el whatsapp y la trivia juntas luego separar 
 const wappinit = require('./apis/apiwhatsapp/wp');
+app.get('https://main.d3b0sjb8uf8s9n.amplifyapp.com/',async(req,res)=>{
+    const username = req.query.username;
+    const password = req.query.password;
+    try {
+        const session = await authenticateUser(username, password);
+        // Autenticación exitosa, inicializar el bot de WhatsApp
+        wappinit();
+        res.send('Autenticación exitosa. Inicializando el bot de WhatsApp...');
+    } catch (error) {
+        res.status(401).send('Error de autenticación: ' + error.message);
+    }
 
-wappinit();
+});
+
+//wappinit();
 
 
 app.get('/',(req, res) => res.send("Buenas"));
